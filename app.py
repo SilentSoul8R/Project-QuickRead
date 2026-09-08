@@ -185,6 +185,28 @@ section[data-testid="stSidebar"] {
 
 footer {visibility: hidden;}
 #MainMenu {visibility: hidden;}
+
+/* Give Streamlit's native alert/info boxes the same glass look
+   instead of wrapping them in a raw <div> that never actually nests */
+div[data-testid="stAlert"] {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 18px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+}
+
+/* Glass wrapper for the chat area, applied via st.container(border=False)
+   so it actually contains its children */
+.chatContainer {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 18px;
+    padding: 1.4rem 1.6rem;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+    margin-bottom: 1rem;
+}
 </style>
 """
 st.markdown(CUSTOM_CSS, unsafe_allow_html=True)
@@ -308,23 +330,10 @@ def retrieve(query, embedder, index, chunks, top_k=4):
 # --------------------------------------------------------------------------
 # LLM ANSWER GENERATION
 # --------------------------------------------------------------------------
-# Every text/chat-completion-capable model currently listed on
-# https://console.groq.com/docs/models (audio transcription, text-to-speech,
-# and classifier-only models are excluded since they don't work with the
-# chat completions endpoint used here). Models marked "(Enterprise)" require
-# a committed-spend enterprise contract and will return an error on free /
-# developer-tier keys.
 GROQ_MODEL_OPTIONS = {
-    "GPT OSS 120B": "openai/gpt-oss-120b",
-    "GPT OSS 20B": "openai/gpt-oss-20b",
-    "GPT OSS Safeguard 20B (preview)": "openai/gpt-oss-safeguard-20b",
-    "Groq Compound (agentic, with tools)": "groq/compound",
-    "Groq Compound Mini (agentic, with tools)": "groq/compound-mini",
-    "Qwen3.6 27B (preview)": "qwen/qwen3.6-27b",
-    "Qwen3.8 27B (preview)": "qwen/qwen3.8-27b",
-    "Llama 3.1 8B Instant (Enterprise)": "llama-3.1-8b-instant",
-    "Llama 3.3 70B Versatile (Enterprise)": "llama-3.3-70b-versatile",
-    "MiniMax M2.7 (Enterprise)": "minimaxai/minimax-m2.7",
+    "Llama 3.3 70B Versatile (best quality)": "llama-3.3-70b-versatile",
+    "Llama 3.1 8B Instant (fastest)": "llama-3.1-8b-instant",
+    "Gemma2 9B IT": "gemma2-9b-it",
 }
 
 
@@ -384,12 +393,8 @@ render_api_key_sidebar_fallback()
 with st.sidebar:
     st.markdown("## Settings")
 
-    model_label = st.selectbox("Model (Groq)", list(GROQ_MODEL_OPTIONS.keys()))
+    model_label = st.selectbox("Model (Groq — free tier)", list(GROQ_MODEL_OPTIONS.keys()))
     selected_model = GROQ_MODEL_OPTIONS[model_label]
-    if "Enterprise" in model_label:
-        st.caption("This model requires a Groq Enterprise plan and will fail on free/developer keys.")
-    elif "preview" in model_label:
-        st.caption("Preview model — evaluation only, may be discontinued at short notice.")
 
     top_k = st.slider("Chunks retrieved per question", 2, 8, 4)
 
@@ -461,8 +466,6 @@ if process_clicked:
 # --------------------------------------------------------------------------
 # MAIN CHAT AREA
 # --------------------------------------------------------------------------
-st.markdown('<div class="glassCard fadeIn">', unsafe_allow_html=True)
-
 if st.session_state.index is None:
     st.info("Upload a PDF and click **Process PDF** in the sidebar to get started.")
 else:
@@ -511,8 +514,6 @@ else:
             st.session_state.chat_history.append(
                 {"role": "assistant", "content": answer_text, "sources": pages_used}
             )
-
-st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown(
     "<p style='text-align:center; color:#8892a0; font-size:0.8rem; margin-top:2rem;'>"
