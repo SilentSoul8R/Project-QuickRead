@@ -1,7 +1,7 @@
 # 📄 PDF Question/Answer Generator
 
 A RAG (Retrieval-Augmented Generation) app: upload a PDF, ask questions, get
-answers grounded in the document — powered by free Groq-hosted LLMs.
+answers grounded in the document, powered by free Groq-hosted LLMs.
 
 ## How it works
 1. **Extract**: text is pulled from every page of your PDF (`pypdf`).
