@@ -308,10 +308,23 @@ def retrieve(query, embedder, index, chunks, top_k=4):
 # --------------------------------------------------------------------------
 # LLM ANSWER GENERATION
 # --------------------------------------------------------------------------
+# Every text/chat-completion-capable model currently listed on
+# https://console.groq.com/docs/models (audio transcription, text-to-speech,
+# and classifier-only models are excluded since they don't work with the
+# chat completions endpoint used here). Models marked "(Enterprise)" require
+# a committed-spend enterprise contract and will return an error on free /
+# developer-tier keys.
 GROQ_MODEL_OPTIONS = {
-    "Llama 3.3 70B Versatile (best quality)": "llama-3.3-70b-versatile",
-    "Llama 3.1 8B Instant (fastest)": "llama-3.1-8b-instant",
-    "Gemma2 9B IT": "gemma2-9b-it",
+    "GPT OSS 120B": "openai/gpt-oss-120b",
+    "GPT OSS 20B": "openai/gpt-oss-20b",
+    "GPT OSS Safeguard 20B (preview)": "openai/gpt-oss-safeguard-20b",
+    "Groq Compound (agentic, with tools)": "groq/compound",
+    "Groq Compound Mini (agentic, with tools)": "groq/compound-mini",
+    "Qwen3.6 27B (preview)": "qwen/qwen3.6-27b",
+    "Qwen3.8 27B (preview)": "qwen/qwen3.8-27b",
+    "Llama 3.1 8B Instant (Enterprise)": "llama-3.1-8b-instant",
+    "Llama 3.3 70B Versatile (Enterprise)": "llama-3.3-70b-versatile",
+    "MiniMax M2.7 (Enterprise)": "minimaxai/minimax-m2.7",
 }
 
 
@@ -371,8 +384,12 @@ render_api_key_sidebar_fallback()
 with st.sidebar:
     st.markdown("## Settings")
 
-    model_label = st.selectbox("Model (Groq — free tier)", list(GROQ_MODEL_OPTIONS.keys()))
+    model_label = st.selectbox("Model (Groq)", list(GROQ_MODEL_OPTIONS.keys()))
     selected_model = GROQ_MODEL_OPTIONS[model_label]
+    if "Enterprise" in model_label:
+        st.caption("This model requires a Groq Enterprise plan and will fail on free/developer keys.")
+    elif "preview" in model_label:
+        st.caption("Preview model — evaluation only, may be discontinued at short notice.")
 
     top_k = st.slider("Chunks retrieved per question", 2, 8, 4)
 
