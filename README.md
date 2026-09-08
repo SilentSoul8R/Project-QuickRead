@@ -4,14 +4,14 @@ A RAG (Retrieval-Augmented Generation) app: upload a PDF, ask questions, get
 answers grounded in the document — powered by free Groq-hosted LLMs.
 
 ## How it works
-1. **Extract** — text is pulled from every page of your PDF (`pypdf`).
-2. **Chunk** — text is split into overlapping chunks.
-3. **Embed & Index** — chunks are embedded with `all-MiniLM-L6-v2`
+1. **Extract**: text is pulled from every page of your PDF (`pypdf`).
+2. **Chunk**: text is split into overlapping chunks.
+3. **Embed & Index**: chunks are embedded with `all-MiniLM-L6-v2`
    (`sentence-transformers`) and indexed with `faiss` for fast similarity search.
-4. **Retrieve** — your question is embedded and matched against the most
+4. **Retrieve**: your question is embedded and matched against the most
    relevant chunks.
-5. **Generate** — the question + retrieved context is sent to a Groq model
-   (Llama 3.3 70B, Llama 3.1 8B, or Gemma2 9B — all free tier) to produce a
+5. **Generate**: the question + retrieved context is sent to a Groq model
+   (Llama 3.3 70B, Llama 3.1 8B, or Gemma2 9B, all free tier) to produce a
    grounded, cited answer.
 
 ## Run locally
@@ -43,7 +43,7 @@ Get a free Groq API key at https://console.groq.com/keys.
 
 ## Notes
 - If no key is found in secrets or the environment, the app shows a masked
-  password field in the sidebar as a session-only fallback — nothing is ever
+  password field in the sidebar as a session-only fallback, nothing is ever
   echoed back to the screen or stored on disk.
 - Scanned/image-only PDFs won't extract text since there's no OCR step;
   use a text-based PDF for best results.
